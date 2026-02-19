@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Tuple
 import numpy as np
 
-from utils.metrics import now_ms, try_cuda_peak_memory, get_cuda_peak_memory_bytes
+from metrics import now_ms, try_cuda_peak_memory, get_cuda_peak_memory_bytes
 
 def run_pytorch_generate(
     model_name: str,
