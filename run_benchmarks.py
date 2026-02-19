@@ -9,8 +9,8 @@ import numpy as np
 from rich.console import Console
 from rich.table import Table
 
-from utils.metrics import BenchResult
-from utils.render import render_summary_md
+from metrics import BenchResult
+from render import render_summary_md
 
 console = Console()
 
