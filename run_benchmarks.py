@@ -63,17 +63,17 @@ def main():
     notes = ""
 
     if backend == "pytorch":
-        from backends.pytorch_runner import run_pytorch_generate
+       from pytorch_runner import run_pytorch_generate
         latencies, tokens_per_sec, peak_mem, notes = run_pytorch_generate(
             model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
         )
     elif backend == "vllm":
-        from backends.vllm_runner import run_vllm_generate
+       from vllm_runner import run_vllm_generate
         latencies, tokens_per_sec, peak_mem, notes = run_vllm_generate(
             model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
         )
     else:
-        from backends.tensorrt_llm_runner import run_tensorrt_llm_generate
+        from tensorrt_llm_runner import run_tensorrt_llm_generate
         latencies, tokens_per_sec, peak_mem, notes = run_tensorrt_llm_generate(
             model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
         )
