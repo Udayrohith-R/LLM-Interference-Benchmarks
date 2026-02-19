@@ -75,6 +75,14 @@ This repo includes a placeholder runner under `backends/tensorrt_llm_runner.py` 
 - `results/` — output artifacts  
 
 ---
+## My Results (Tesla T4, Colab)
+- Backend: PyTorch (HF), model: distilgpt2
+- Batch size: 2, prompt: 128, gen: 128 (3 runs + warmup)
+- Avg latency: 666.10 ms
+- P95 latency: 684.84 ms
+- Throughput: 384.32 tokens/sec
+- Peak GPU memory: 0.18 GB
+- Notes: Decode dominated by attention + KV-cache growth
 
 ## License
 MIT
