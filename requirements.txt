@@ -1,0 +1,9 @@
+# Minimal baseline deps (PyTorch + HF)
+# NOTE: Install a CUDA-enabled torch build that matches your system.
+# For many setups, you may need to install torch separately from https://pytorch.org
+torch>=2.2.0
+transformers>=4.41.0
+accelerate>=0.31.0
+numpy>=1.26.0
+psutil>=5.9.0
+rich>=13.7.0

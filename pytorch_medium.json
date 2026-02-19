@@ -1,0 +1,10 @@
+{
+  "backend": "pytorch",
+  "model": "gpt2",
+  "batch_size": 2,
+  "prompt_tokens": 256,
+  "new_tokens": 128,
+  "warmup_runs": 1,
+  "runs": 3,
+  "dtype": "float16"
+}

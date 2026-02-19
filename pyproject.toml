@@ -1,0 +1,5 @@
+[project]
+name = "llm-inference-benchmarks"
+version = "0.1.0"
+description = "Reproducible LLM inference benchmarks on NVIDIA GPUs"
+requires-python = ">=3.10"
