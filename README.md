@@ -22,3 +22,59 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -U pip
 pip install -r requirements.txt
+```
+
+### 2) Run a benchmark (GPU recommended)
+```bash
+python benchmarks/run_benchmarks.py --backend pytorch --model distilgpt2 --device cuda
+```
+
+This writes:
+- `results/latest.json` — full machine-readable report  
+- `results/latest.md` — human-friendly summary  
+
+---
+
+## Optional: vLLM backend
+vLLM is optional because it has platform-specific wheels.
+
+```bash
+pip install vllm
+python benchmarks/run_benchmarks.py --backend vllm --model mistralai/Mistral-7B-Instruct-v0.2 --device cuda
+```
+
+---
+
+## TensorRT-LLM (optional)
+TensorRT-LLM requires additional setup and engine build steps.  
+This repo includes a placeholder runner under `backends/tensorrt_llm_runner.py` so you can integrate TensorRT-LLM engines once available.
+
+---
+
+## What this measures
+- **Prefill + decode latency** (wall-clock)  
+- **Tokens/sec** (approx throughput)  
+- **Peak GPU memory usage** (if CUDA is available)  
+- Prompt length / generation length / batch size  
+
+---
+
+## Inference performance analysis topics
+- How batch size and sequence length affect throughput vs latency  
+- Why KV-cache and attention dominate decode time  
+- How to profile bottlenecks using Nsight Systems / Nsight Compute  
+- Tradeoffs between eager PyTorch, vLLM paged attention, and TensorRT-LLM engines  
+
+---
+
+## Repo structure
+- `benchmarks/run_benchmarks.py` — main CLI  
+- `benchmarks/configs/*.json` — benchmark presets  
+- `backends/` — runtime-specific backends  
+- `utils/metrics.py` — latency, throughput, GPU memory helpers  
+- `results/` — output artifacts  
+
+---
+
+## License
+MIT
