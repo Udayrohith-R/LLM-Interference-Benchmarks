@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -14,28 +15,33 @@ from render import render_summary_md
 
 console = Console()
 
+
 def percentile(values: List[float], p: float) -> float:
     if not values:
         return 0.0
     return float(np.percentile(np.array(values), p))
 
+
 def load_config(path: str) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def ensure_results_dir() -> str:
-    outdir = os.path.join(os.path.dirname(__file__), "..", "results")
+    # results/ folder at repo root (same level as this file)
+    outdir = os.path.join(os.path.dirname(__file__), "results")
     outdir = os.path.abspath(outdir)
     os.makedirs(outdir, exist_ok=True)
     return outdir
 
-def main():
+
+def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", type=str, default="", help="Path to a JSON config preset.")
-    ap.add_argument("--backend", type=str, default="pytorch", choices=["pytorch","vllm","tensorrt-llm"])
+    ap.add_argument("--backend", type=str, default="pytorch", choices=["pytorch", "vllm", "tensorrt-llm"])
     ap.add_argument("--model", type=str, default="distilgpt2")
     ap.add_argument("--device", type=str, default="cuda")
-    ap.add_argument("--dtype", type=str, default="float16", choices=["float16","bfloat16","float32"])
+    ap.add_argument("--dtype", type=str, default="float16", choices=["float16", "bfloat16", "float32"])
     ap.add_argument("--batch-size", type=int, default=1)
     ap.add_argument("--prompt-tokens", type=int, default=128)
     ap.add_argument("--new-tokens", type=int, default=128)
@@ -43,7 +49,7 @@ def main():
     ap.add_argument("--runs", type=int, default=3)
     args = ap.parse_args()
 
-    cfg = {}
+    cfg: Dict[str, Any] = {}
     if args.config:
         cfg = load_config(args.config)
 
@@ -58,26 +64,32 @@ def main():
     runs = int(cfg.get("runs", args.runs))
 
     latencies: List[float] = []
-    tokens_per_sec = 0.0
+    tokens_per_sec: float = 0.0
     peak_mem = None
     notes = ""
-if backend == "pytorch":
-    from pytorch_runner import run_pytorch_generate
-    latencies, tokens_per_sec, peak_mem, notes = run_pytorch_generate(
-        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-    )
 
-elif backend == "vllm":
-    from vllm_runner import run_vllm_generate
-    latencies, tokens_per_sec, peak_mem, notes = run_vllm_generate(
-        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-    )
+    # ---- Backend dispatch (FILES ARE ROOT-LEVEL IN YOUR REPO) ----
+    if backend == "pytorch":
+        from pytorch_runner import run_pytorch_generate
 
-else:
-    from tensorrt_llm_runner import run_tensorrt_llm_generate
-    latencies, tokens_per_sec, peak_mem, notes = run_tensorrt_llm_generate(
-        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-    )
+        latencies, tokens_per_sec, peak_mem, notes = run_pytorch_generate(
+            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+        )
+
+    elif backend == "vllm":
+        from vllm_runner import run_vllm_generate
+
+        latencies, tokens_per_sec, peak_mem, notes = run_vllm_generate(
+            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+        )
+
+    else:  # "tensorrt-llm"
+        from tensorrt_llm_runner import run_tensorrt_llm_generate
+
+        latencies, tokens_per_sec, peak_mem, notes = run_tensorrt_llm_generate(
+            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+        )
+
     avg_ms = float(mean(latencies)) if latencies else 0.0
     p95_ms = percentile(latencies, 95)
 
@@ -126,6 +138,7 @@ else:
     console.print(table)
     console.print(f"[green]Wrote[/green] {json_path}")
     console.print(f"[green]Wrote[/green] {md_path}")
+
 
 if __name__ == "__main__":
     main()
