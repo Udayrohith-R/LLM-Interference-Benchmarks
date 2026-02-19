@@ -61,23 +61,23 @@ def main():
     tokens_per_sec = 0.0
     peak_mem = None
     notes = ""
+if backend == "pytorch":
+    from pytorch_runner import run_pytorch_generate
+    latencies, tokens_per_sec, peak_mem, notes = run_pytorch_generate(
+        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+    )
 
-    if backend == "pytorch":
-       from pytorch_runner import run_pytorch_generate
-        latencies, tokens_per_sec, peak_mem, notes = run_pytorch_generate(
-            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-        )
-    elif backend == "vllm":
-       from vllm_runner import run_vllm_generate
-        latencies, tokens_per_sec, peak_mem, notes = run_vllm_generate(
-            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-        )
-    else:
-        from tensorrt_llm_runner import run_tensorrt_llm_generate
-        latencies, tokens_per_sec, peak_mem, notes = run_tensorrt_llm_generate(
-            model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
-        )
+elif backend == "vllm":
+    from vllm_runner import run_vllm_generate
+    latencies, tokens_per_sec, peak_mem, notes = run_vllm_generate(
+        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+    )
 
+else:
+    from tensorrt_llm_runner import run_tensorrt_llm_generate
+    latencies, tokens_per_sec, peak_mem, notes = run_tensorrt_llm_generate(
+        model, device, dtype, batch_size, prompt_tokens, new_tokens, warmup_runs, runs
+    )
     avg_ms = float(mean(latencies)) if latencies else 0.0
     p95_ms = percentile(latencies, 95)
 
