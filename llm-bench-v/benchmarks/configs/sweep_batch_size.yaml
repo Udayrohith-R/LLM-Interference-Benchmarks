@@ -1,0 +1,20 @@
+# Batch-size × sequence-length sweep for throughput/latency characterisation.
+#
+# Enumerate all combinations of (batch_size, prompt_tokens, new_tokens).
+# Results are written to results/sweep_batch-size-sweep.{json,md}.
+#
+# Typical use: run on a target GPU to produce a characterisation matrix
+# before deciding on optimal serving batch size.
+name: batch-size-sweep
+backend: pytorch
+model: gpt2
+device: cuda
+dtype: float16
+warmup_runs: 2
+runs: 5
+output_dir: results
+
+sweep:
+  batch_sizes: [1, 2, 4, 8]
+  prompt_token_variants: [128, 256]
+  new_token_variants: [128]

@@ -1,0 +1,11 @@
+name: medium-gpt2
+backend: pytorch
+model: gpt2
+device: cuda
+dtype: float16
+batch_size: 4
+prompt_tokens: 256
+new_tokens: 256
+warmup_runs: 2
+runs: 5
+output_dir: results

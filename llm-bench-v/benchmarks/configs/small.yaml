@@ -1,0 +1,11 @@
+name: small-sanity
+backend: pytorch
+model: distilgpt2
+device: cuda
+dtype: float16
+batch_size: 1
+prompt_tokens: 128
+new_tokens: 128
+warmup_runs: 2
+runs: 5
+output_dir: results

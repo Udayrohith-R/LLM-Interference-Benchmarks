@@ -1,0 +1,26 @@
+# Core inference deps
+# NOTE: Install a CUDA-enabled torch build matching your system.
+# See: https://pytorch.org/get-started/locally/
+torch>=2.2.0
+transformers>=4.41.0
+accelerate>=0.31.0
+
+# Numerics / stats
+numpy>=1.26.0
+
+# Config parsing
+pydantic>=2.0
+pyyaml>=6.0
+
+# Terminal output
+rich>=13.7.0
+
+# System monitoring
+psutil>=5.9.0
+
+# Optional: GPU driver info (pynvml exposes driver version, clock speeds, BW)
+# pynvml>=11.0.0
+
+# Optional backends (not installed by default — platform-specific wheels)
+# vllm>=0.4.0
+# tensorrt-llm  (see https://github.com/NVIDIA/TensorRT-LLM for install)

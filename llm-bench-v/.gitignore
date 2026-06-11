@@ -1,0 +1,30 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Benchmark outputs (keep baseline; ignore transient results)
+results/*.json
+results/*.md
+!results/baseline.json
+!results/.gitkeep
+
+# Model cache
+*.safetensors
+*.bin
+/model_cache/
+
+# TRT engine dirs
+engines/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/

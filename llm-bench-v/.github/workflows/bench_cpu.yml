@@ -1,0 +1,56 @@
+name: CPU sanity benchmark
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpu_sanity:
+    name: CPU sanity (distilgpt2, float32)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tiny CPU benchmark
+        run: |
+          python benchmarks/run_benchmarks.py \
+            --backend pytorch \
+            --model distilgpt2 \
+            --device cpu \
+            --dtype float32 \
+            --batch-size 1 \
+            --prompt-tokens 32 \
+            --new-tokens 16 \
+            --warmup-runs 0 \
+            --runs 1 \
+            --name ci_sanity
+
+      - name: Verify output artifacts exist
+        run: |
+          test -f results/ci_sanity.json
+          test -f results/ci_sanity.md
+          python -c "
+          import json, sys
+          r = json.load(open('results/ci_sanity.json'))
+          assert r['schema_version'] == '2.0', 'Wrong schema version'
+          assert r['stats']['mean_ms'] > 0, 'Zero latency'
+          assert r['stats']['tokens_per_sec'] > 0, 'Zero throughput'
+          print(f'Latency: {r[\"stats\"][\"mean_ms\"]:.0f} ms  '
+                f'TPS: {r[\"stats\"][\"tokens_per_sec\"]:.1f}')
+          "
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: results/

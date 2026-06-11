@@ -1,0 +1,64 @@
+name: Latency regression check
+
+on:
+  pull_request:
+
+jobs:
+  regression:
+    name: Check latency / throughput regression
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history so we can fetch the baseline from main.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Run on the current PR branch.
+      - name: Run benchmark (PR branch)
+        run: |
+          python benchmarks/run_benchmarks.py \
+            --backend pytorch \
+            --model distilgpt2 \
+            --device cpu \
+            --dtype float32 \
+            --batch-size 1 \
+            --prompt-tokens 64 \
+            --new-tokens 32 \
+            --warmup-runs 0 \
+            --runs 3 \
+            --name pr_result
+
+      # Fetch baseline result from main branch (stored as a tracked artifact).
+      # If no baseline exists yet, save this run as the baseline and skip check.
+      - name: Check or save baseline
+        run: |
+          BASELINE=results/baseline.json
+          CURRENT=results/pr_result.json
+
+          # Try to restore baseline from the repository (committed by a prior run).
+          git show origin/main:results/baseline.json > "$BASELINE" 2>/dev/null || true
+
+          if [ -f "$BASELINE" ]; then
+            python -m utils.regression check "$CURRENT" "$BASELINE" \
+              --latency-threshold 15 \
+              --throughput-threshold 10
+          else
+            echo "No baseline found on main — saving this run as baseline."
+            cp "$CURRENT" "$BASELINE"
+          fi
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-results
+          path: results/
