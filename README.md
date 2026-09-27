@@ -157,18 +157,6 @@ python -m utils.regression save results/latest.json results/baseline.json
 git add results/baseline.json && git commit -m "chore: update latency baseline"
 ```
 
----
-
-## Interview / portfolio talking points
-
-- **CUDA events vs wall-clock**: why `perf_counter` overstates GPU latency (enqueue vs execution).
-- **Prefill/decode split**: attention is compute-bound during prefill (quadratic in seq len), memory-bandwidth-bound during decode (streaming KV cache).
-- **KV-cache memory**: peak GPU mem dominated by `2 × layers × heads × head_dim × batch × seq_len × dtype_bytes`; how PagedAttention (vLLM) eliminates fragmentation.
-- **Batch size tradeoffs**: larger batches increase throughput but raise P99 latency; choosing the knee of the curve.
-- **TPOT vs TTFT**: interactive applications care about TTFT; batch-processing pipelines care about total TPS.
-- **Profiling**: Nsight Systems for timeline, Nsight Compute for kernel-level occupancy and memory throughput.
-
----
 
 ## Repo structure
 
